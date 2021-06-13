@@ -141,6 +141,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #if !defined(OLED_FONT_HEIGHT)
 #    define OLED_FONT_HEIGHT 8
 #endif
+// Default brightness level
+#if !defined(OLED_BRIGHTNESS)
+#    define OLED_BRIGHTNESS 255
+#endif
 
 #if !defined(OLED_TIMEOUT)
 #    if defined(OLED_DISABLE_TIMEOUT)
@@ -150,8 +154,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    endif
 #endif
 
+#if !defined(OLED_FADE_OUT_INTERVAL)
+#    define OLED_FADE_OUT_INTERVAL 0x00
+#endif
+
+#if OLED_FADE_OUT_INTERVAL > 0x0F || OLED_FADE_OUT_INTERVAL < 0x00
+#    error OLED_FADE_OUT_INTERVAL must be between 0x00 and 0x0F
+#endif
+
 #if !defined(OLED_I2C_TIMEOUT)
 #    define OLED_I2C_TIMEOUT 100
+#endif
+
+#if !defined(OLED_UPDATE_INTERVAL) && defined(SPLIT_KEYBOARD)
+#    define OLED_UPDATE_INTERVAL 50
 #endif
 
 typedef struct __attribute__((__packed__)) {
@@ -256,6 +272,16 @@ bool oled_on(void);
 // Can be used to manually turn off the screen if it is on
 // Returns true if the screen was off or turns off
 bool oled_off(void);
+
+// Returns true if the oled is currently on, false if it is
+// not
+bool is_oled_on(void);
+
+// Sets the brightness of the display
+uint8_t oled_set_brightness(uint8_t level);
+
+// Gets the current brightness of the display
+uint8_t oled_get_brightness(void);
 
 // Basically it's oled_render, but with timeout management and oled_task_user calling!
 void oled_task(void);
